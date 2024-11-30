@@ -377,7 +377,7 @@ fetch('/capital/dept_funding_sources')
     const grantFuture = data.map(item => item.Grant_Future);
     const externalFunds = data.map(item => item.External_Funds);
 
-    const ctx = document.getElementById('department_funding_sources').getContext('2d');
+    const ctx = document.getElementById('dept_funding_sources').getContext('2d');
 
     new Chart(ctx, {
       type: 'bar',
