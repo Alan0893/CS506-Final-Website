@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>City of Boston - Capital Budget</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+		<!-- Add Chart.js for Graphs -->
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	</head>
+	<body>
+		<!-- Title Section -->
+		<header class="header">
+			<h1 class="centered-title">Capital Budget Analysis</h1>
+			<div class="button-container">
+				<a href="{{ url_for('index') }}" class="button">Home</a>
+				<a href="{{ url_for('operating') }}" class="button">Operating</a>
+			</div>
+		</header>
+
+		<!-- Description Section -->
+		<p class="description">
+			Dive into the City of Boston's capital budget, which focuses on investments in infrastructure, facilities, and long-term projects. This section provides a detailed view of funding allocations, project priorities, and trends over time, highlighting the city's commitment to sustainable development and growth.
+		</p>
+
+		<!-- Graph Block Container -->
+		<div class="graph-block-container">
+			
+			<div class="graph-block">
+				<h2 class="block-title">Top 5 Departments by Budget (FY25)</h2>
+				<div class="chart-container">
+					<canvas id="department_budget"></canvas>
+				</div>
+				<div class="comment">
+					<p>
+						TBD
+					</p>
+				</div>
+			</div>
+
+			<div class="graph-block">
+				<h2 class="block-title">Budget by Category</h2>
+				<div class="chart-container">
+					<canvas id="category_budget"></canvas>
+				</div>
+				<div class="comment">
+					<p>
+						TBD
+					</p>
+				</div>
+			</div>
+
+			<div class="graph-block">
+				<h2 class="block-title">Top 15 Program Budgets</h2>
+				<div class="chart-container">
+					<canvas id="program_budget"></canvas>
+				</div>
+				<div class="comment">
+					<p>
+						TBD
+					</p>
+				</div>
+			</div>
+
+			<div class="graph-block">
+				<h2 class="block-title">Top 5 Dept: Expenses over the Years</h2>
+				<div class="chart-container">
+					<canvas id="top_5_dept"></canvas>
+				</div>
+				<div class="comment">
+					<p>
+						TBD
+					</p>
+				</div>
+			</div>
+
+			<div class="graph-block">
+				<h2 class="block-title">Top 5 Increased Dept: Expenses over the Years</h2>
+				<div class="chart-container">
+					<canvas id="top_5_increased"></canvas>
+				</div>
+				<div class="comment">
+					<p>
+						TBD
+					</p>
+				</div>
+			</div>
+
+			<div class="graph-block">
+				<h2 class="block-title">Expenses Categories: Expenses over the Years</h2>
+				<div class="chart-container">
+					<canvas id="category_expenses"></canvas>
+				</div>
+				<div class="comment">
+					<p>
+						TBD
+					</p>
+				</div>
+			</div>
+
+    <script src="{{ url_for('static', filename='js/capital.js') }}"></script>
+	</body>
+</html>

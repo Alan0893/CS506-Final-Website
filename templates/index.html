@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>City of Boston Budget Analysis</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+		<!-- Add Leaflet CSS and JS -->
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+		<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+	</head>
+	
+	<body>
+		<!-- Map Container -->
+		<div id="map"></div>
+
+		<!-- Content Container -->
+		<div class="container">
+			<header>
+				<h1>City of Boston Budget Analysis</h1>
+			</header>
+			<div class="authors">
+				<p>
+					<strong>Ryan Gilbert</strong>,
+					<strong>Alan Lin</strong>,
+					<strong>Oscar Mo</strong>,
+					<strong>Kae Chi</strong>,
+					<strong>Chris Min</strong>
+				</p>
+			</div>
+			<p class="description">
+				This project aims to analyze the City of Boston's operating and capital budgets over time. 
+				The focus will be on understanding spending patterns by department, geography, program, and 
+				budget category. Additionally, we will explore discrepancies between projected and actual spending, 
+				identify per capita spending in areas such as education and housing, and provide visual insights 
+				to help inform strategic decisions for the city's resource allocation.
+			</p>
+			<div class="button-container">
+				<a href="{{ url_for('operating') }}" class="button">Operating</a>
+				<a href="{{ url_for('capital') }}" class="button">Capital</a>
+			</div>
+		</div>
+
+		<script>
+			// Initialize the map
+			var map = L.map('map').setView([42.3601, -71.0589], 13);
+
+			// Add OpenStreetMap tiles
+			L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+			}).addTo(map);
+		</script>
+	</body>
+</html>
