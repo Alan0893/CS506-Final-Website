@@ -12,6 +12,18 @@ operating_df['FY23 Actual Expense'] = operating_df['FY23 Actual Expense'].astype
 operating_df['FY24 Appropriation'] = operating_df['FY24 Appropriation'].astype(float)
 operating_df['FY25 Budget'] = operating_df['FY25 Budget'].astype(float)
 
+# Capital Budget
+capital_df = pd.read_csv('./data/fy25-adopted-capital-budget.csv')
+capital_df = capital_df.replace('#Missing', np.nan)
+float_columns = [
+	'Authorization_Existing', 'Authorization_FY', 'Authorization_Future', 
+	'Grant_Existing', 'Grant_FY', 'Grant_Future', 'GO_Expended', 'Capital_Year_0', 
+	'CapitalYear_1', 'Capital_Year_25', 'Grant_Expended', 'Grant_Year_0', 
+	'Grant_Year_1', 'GrantYear_25', 'External_Funds', 'Total_Project_Budget'
+]
+capital_df[float_columns] = capital_df[float_columns].astype(float)
+
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -122,6 +134,79 @@ def category_expenses():
     })
 
   return jsonify(response_data)
+#------------------------------------------------------------------------------------------------
+@app.route('/capital/department_cap_budget')
+def get_dept_cap_budget():
+  department_spending = capital_df.groupby('Department')['Total_Project_Budget'].sum().sort_values(ascending=False)
+  top_n_departments = 5
+  top_departments = department_spending.head(top_n_departments)
+  other_departments = department_spending.iloc[top_n_departments:].sum()
+  top_departments['Other'] = other_departments
+
+  data = top_departments.reset_index().to_dict(orient='records')
+  
+  return jsonify(data)
+
+@app.route('/capital/project_status')
+def get_project_status():
+  project_status_counts = capital_df['Project_Status'].value_counts()
+
+  data = project_status_counts.reset_index().to_dict(orient='records')
+  
+  return jsonify(data)
+
+@app.route('/capital/funding_sources')
+def get_funding_sources():
+  funding_sources = ['Authorization_Existing', 'Authorization_FY', 'Authorization_Future', 
+                    'Grant_Existing', 'Grant_FY', 'Grant_Future', 'External_Funds']
+  funding_totals = capital_df[funding_sources].sum()
+
+  data = funding_totals.reset_index().to_dict(orient='records')
+  
+  return jsonify(data)
+
+@app.route('/capital/top_5_neighborhoods')
+def get_top_neighborhoods():
+  neighborhood_budget = capital_df.groupby('Neighborhood')['Total_Project_Budget'].sum().sort_values(ascending=False)
+  top_n_neighborhoods = 5
+  top_neighborhoods = neighborhood_budget.head(top_n_neighborhoods)
+  other_neighborhoods = neighborhood_budget.iloc[top_n_neighborhoods:].sum()
+  top_neighborhoods['Other'] = other_neighborhoods
+
+  data = top_n_neighborhoods.reset_index().to_dict(orient='records')
+  
+  return jsonify(data)
+
+@app.route('/capital/avg_project_budget')
+def get_avg_project_budget():
+  average_neighborhood_budget = capital_df.groupby('Neighborhood')['Total_Project_Budget'].mean().sort_values(ascending=False)
+
+  data = average_neighborhood_budget.reset_index().to_dict(orient='records')
+  
+  return jsonify(data)
+
+@app.route('/capital/capital_spending')
+def get_capital_spending():
+  years = ['Capital_Year_0', 'CapitalYear_1', 'Capital_Year_25']
+  capital_yearly_spending = capital_df[years].sum()
+
+  data = capital_yearly_spending.reset_index().to_dict(orient='records')
+  
+  return jsonify(data)
+
+@app.route('/capital/dept_funding_sources')
+def get_dept_funding_sources():
+  funding_sources = [
+    'Authorization_Existing', 'Authorization_FY', 'Authorization_Future',
+    'Grant_Existing', 'Grant_FY', 'Grant_Future', 'External_Funds'
+  ]
+  funding_by_department = capital_df.groupby('Department')[funding_sources].sum()
+
+  data = funding_by_department.reset_index().to_dict(orient='records')
+  
+  return jsonify(data)
+
+#------------------------------------------------------------------------------------------------
 
 
 if __name__ == '__main__':
