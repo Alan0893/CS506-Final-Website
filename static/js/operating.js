@@ -103,6 +103,68 @@ fetch('/operating/budget_by_category')
   .catch(error => console.error('Error fetching data:', error));
 
 
+/* Budget by Program */
+fetch('/operating/program_budget')
+  .then(response => response.json())
+  .then(data => {
+    const labels = data.map(item => item['Program']); 
+    const budgetData = data.map(item => item['FY25 Budget']); 
+
+    const ctx = document.getElementById('program_budget').getContext('2d');
+
+    // Define a color scheme for programs
+    const programColors = {
+      "Pensions": { background: 'rgba(255, 99, 132, 0.5)', border: 'rgba(255, 99, 132, 1)' },
+      "BPS Operations": { background: 'rgba(75, 192, 192, 0.5)', border: 'rgba(75, 192, 192, 1)' },
+      "Charter School Tuition": { background: 'rgba(255, 205, 86, 0.5)', border: 'rgba(255, 205, 86, 1)' },
+      "Debt Service": { background: 'rgba(54, 162, 235, 0.5)', border: 'rgba(54, 162, 235, 1)' },
+      "K-8": { background: 'rgba(201, 203, 207, 0.5)', border: 'rgba(201, 203, 207, 1)' },
+      "Bureau of Field Services": { background: 'rgba(153, 102, 255, 0.5)', border: 'rgba(153, 102, 255, 1)' },
+      "Health Insurance": { background: 'rgba(255, 159, 64, 0.5)', border: 'rgba(255, 159, 64, 1)' },
+      "Boston Fire Suppression": { background: 'rgba(75, 192, 192, 0.5)', border: 'rgba(75, 192, 192, 1)' },
+      "BPS Finance": { background: 'rgba(255, 99, 132, 0.5)', border: 'rgba(255, 99, 132, 1)' },
+      "Elementary": { background: 'rgba(54, 162, 235, 0.5)', border: 'rgba(54, 162, 235, 1)' },
+      "High": { background: 'rgba(255, 205, 86, 0.5)', border: 'rgba(255, 205, 86, 1)' },
+      "Public Health Commission": { background: 'rgba(201, 203, 207, 0.5)', border: 'rgba(201, 203, 207, 1)' },
+      "MBTA": { background: 'rgba(153, 102, 255, 0.5)', border: 'rgba(153, 102, 255, 1)' },
+      "Reserve for Collective Bargaining City": { background: 'rgba(255, 159, 64, 0.5)', border: 'rgba(255, 159, 64, 1)' },
+      "BAT-Admin & Technology": { background: 'rgba(255, 99, 132, 0.5)', border: 'rgba(255, 99, 132, 1)' },
+      "Other": { background: 'rgba(192, 75, 75, 0.5)', border: 'rgba(192, 75, 75, 1)' }
+    };
+
+    // Generate background and border colors dynamically
+    const backgroundColors = labels.map(label => programColors[label]?.background || 'rgba(0, 0, 0, 0.5)'); // Default fallback
+    const borderColors = labels.map(label => programColors[label]?.border || 'rgba(0, 0, 0, 1)'); // Default fallback
+
+    new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: budgetData,
+          backgroundColor: backgroundColors,
+          borderColor: borderColors,
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: {
+            callbacks: {
+              label: function(tooltipItem) {
+                return tooltipItem.label + ': $' + tooltipItem.raw.toLocaleString(); // Format as currency
+              }
+            }
+          }
+        }
+      }
+    });
+  })
+  .catch(error => console.error('Error fetching data:', error));
+
+
 /* Top 5 Departments: Expenses over the Years */
 fetch('/operating/top_5_dept')
   .then(response => response.json())
