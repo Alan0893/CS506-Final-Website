@@ -88,7 +88,7 @@ fetch('/operating/budget_by_category')
           tooltip: {
             callbacks: {
               label: function(tooltipItem) {
-                return tooltipItem.label + ': $' + tooltipItem.raw.toLocaleString(); // Format as currency
+                return tooltipItem.label + ': $' + tooltipItem.raw.toLocaleString(); 
               }
             }
           }
@@ -108,7 +108,6 @@ fetch('/operating/program_budget')
 
     const ctx = document.getElementById('program_budget').getContext('2d');
 
-    // Define a color scheme for programs
     const programColors = {
       "Pensions": { background: 'rgba(255, 99, 132, 0.5)', border: 'rgba(255, 99, 132, 1)' },
       "BPS Operations": { background: 'rgba(75, 192, 192, 0.5)', border: 'rgba(75, 192, 192, 1)' },
@@ -128,9 +127,8 @@ fetch('/operating/program_budget')
       "Other": { background: 'rgba(192, 75, 75, 0.5)', border: 'rgba(192, 75, 75, 1)' }
     };
 
-    // Generate background and border colors dynamically
-    const backgroundColors = labels.map(label => programColors[label]?.background || 'rgba(0, 0, 0, 0.5)'); // Default fallback
-    const borderColors = labels.map(label => programColors[label]?.border || 'rgba(0, 0, 0, 1)'); // Default fallback
+    const backgroundColors = labels.map(label => programColors[label]?.background || 'rgba(0, 0, 0, 0.5)'); 
+    const borderColors = labels.map(label => programColors[label]?.border || 'rgba(0, 0, 0, 1)'); 
 
     new Chart(ctx, {
       type: 'pie',
@@ -150,7 +148,7 @@ fetch('/operating/program_budget')
           tooltip: {
             callbacks: {
               label: function(tooltipItem) {
-                return tooltipItem.label + ': $' + tooltipItem.raw.toLocaleString(); // Format as currency
+                return tooltipItem.label + ': $' + tooltipItem.raw.toLocaleString(); 
               }
             }
           }
@@ -167,12 +165,10 @@ fetch('/operating/top_5_dept')
   .then(data => {
     const ctx = document.getElementById('top_5_dept').getContext('2d');
 
-    // Filter out the "Other" department
     const filteredData = data.filter(item => item.Dept !== "Other");
 
     const labels = ["FY22", "FY23", "FY24", "FY25"];
 
-    // Predefined colors for each department
     const departmentColors = {
       "Boston Public Schools": 'rgba(255, 99, 132, 1)',
       "Police Department": 'rgba(54, 162, 235, 1)',
@@ -182,7 +178,7 @@ fetch('/operating/top_5_dept')
     };
 
     const datasets = filteredData.map(item => ({
-      label: item.Dept, // Department name
+      label: item.Dept, 
       data: [
         item['FY22 Actual Expense'],
         item['FY23 Actual Expense'],
@@ -207,7 +203,7 @@ fetch('/operating/top_5_dept')
           tooltip: {
             callbacks: {
               label: function(tooltipItem) {
-                return tooltipItem.dataset.label + ': $' + tooltipItem.raw.toLocaleString(); // Format as currency
+                return tooltipItem.dataset.label + ': $' + tooltipItem.raw.toLocaleString(); 
               }
             }
           }
@@ -265,7 +261,7 @@ fetch('/operating/top_5_increased')
           tooltip: {
             callbacks: {
               label: function(tooltipItem) {
-                return tooltipItem.dataset.label + ': $' + tooltipItem.raw.toLocaleString(); // Format as currency
+                return tooltipItem.dataset.label + ': $' + tooltipItem.raw.toLocaleString(); 
               }
             }
           }
@@ -325,7 +321,7 @@ fetch('/operating/category_expenses')
           tooltip: {
             callbacks: {
               label: function(tooltipItem) {
-                return tooltipItem.dataset.label + ': $' + tooltipItem.raw.toLocaleString(); // Format as currency
+                return tooltipItem.dataset.label + ': $' + tooltipItem.raw.toLocaleString(); 
               }
             }
           }

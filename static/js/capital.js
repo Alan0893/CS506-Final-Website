@@ -2,14 +2,11 @@
 fetch('/capital/department_cap_budget')
   .then(response => response.json())
   .then(data => {
-    // Select the canvas element
     const ctx = document.getElementById('department_cap_budget').getContext('2d');
 
-    // Extract labels and data for the chart
     const labels = data.map(item => item.Department);
     const budgetData = data.map(item => item.Total_Project_Budget);
 
-    // Define a color mapping for departments
     const colors = {
       'Boston Public Schools': { background: 'rgba(255, 99, 132, 0.5)', border: 'rgba(255, 99, 132, 1)' },
       'Public Works Department': { background: 'rgba(75, 192, 192, 0.5)', border: 'rgba(75, 192, 192, 1)' },
@@ -19,11 +16,9 @@ fetch('/capital/department_cap_budget')
       'Other': { background: 'rgba(153, 102, 255, 0.5)', border: 'rgba(153, 102, 255, 1)' }
     };
 
-    // Generate background and border colors dynamically
     const backgroundColors = labels.map(label => colors[label]?.background || 'rgba(0, 0, 0, 0.5)'); 
     const borderColors = labels.map(label => colors[label]?.border || 'rgba(0, 0, 0, 1)'); 
 
-    // Create the pie chart
     new Chart(ctx, {
       type: 'pie',
       data: {
@@ -53,18 +48,15 @@ fetch('/capital/department_cap_budget')
   .catch(error => console.error('Error fetching data:', error));
 
 
-/* Pie chart: Total Project Budget by Neighborhood */
+/* Total Project Budget by Neighborhood */
 fetch('/capital/neighborhood_budget')
   .then(response => response.json())
   .then(data => {
-    // Select the canvas element
     const ctx = document.getElementById('top_5_neighborhoods').getContext('2d');
 
-    // Define labels and data
     const labels = data.map(item => item.Neighborhood);
     const budgetData = data.map(item => item.Total_Project_Budget);
 
-    // Define background colors for each neighborhood
     const backgroundColors = [
       'rgba(75, 192, 192, 0.7)',    // Citywide
       'rgba(255, 99, 132, 0.7)',    // Charlestown
@@ -74,7 +66,6 @@ fetch('/capital/neighborhood_budget')
       'rgba(201, 203, 207, 0.7)'    // Other
     ];
 
-    // Create the pie chart
     new Chart(ctx, {
       type: 'pie',
       data: {

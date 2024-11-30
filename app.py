@@ -159,7 +159,6 @@ def neighborhood_budget():
   data = top_neighborhoods.reset_index().to_dict(orient='records')
   return jsonify(data)
 
-
 @app.route('/capital/project_status')
 def get_project_status():
   project_status_counts = capital_df['Project_Status'].value_counts()
@@ -195,7 +194,6 @@ def get_yearly_spending():
   data = capital_yearly_spending.reset_index().rename(columns={'index': 'Year', 0: 'Spending'}).to_dict(orient='records')
   return jsonify(data)
 
-
 @app.route('/capital/dept_funding_sources')
 def get_dept_funding_sources():
   funding_sources = [
@@ -207,9 +205,7 @@ def get_dept_funding_sources():
   data = funding_by_department.reset_index().to_dict(orient='records')
   
   return jsonify(data)
-
 #------------------------------------------------------------------------------------------------
-
 
 if __name__ == '__main__':
   app.run(debug=True)
