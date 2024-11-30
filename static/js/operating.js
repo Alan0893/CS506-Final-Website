@@ -7,7 +7,6 @@ fetch('/operating/top_5_dept')
 
     const ctx = document.getElementById('department_budget').getContext('2d');
 
-    // Define colors for departments
     const colors = {
       "Boston Public Schools": { background: 'rgba(255, 99, 132, 0.5)', border: 'rgba(255, 99, 132, 1)' },
       "Police Department": { background: 'rgba(75, 192, 192, 0.5)', border: 'rgba(75, 192, 192, 1)' },
@@ -17,9 +16,8 @@ fetch('/operating/top_5_dept')
       "Other": { background: 'rgba(153, 102, 255, 0.5)', border: 'rgba(153, 102, 255, 1)' }
     };
 
-    // Generate background and border colors dynamically
-    const backgroundColors = labels.map(label => colors[label]?.background || 'rgba(0, 0, 0, 0.5)'); // Default color if not found
-    const borderColors = labels.map(label => colors[label]?.border || 'rgba(0, 0, 0, 1)'); // Default color if not found
+    const backgroundColors = labels.map(label => colors[label]?.background || 'rgba(0, 0, 0, 0.5)'); 
+    const borderColors = labels.map(label => colors[label]?.border || 'rgba(0, 0, 0, 1)'); 
 
     new Chart(ctx, {
       type: 'pie',
@@ -59,7 +57,6 @@ fetch('/operating/budget_by_category')
 
     const ctx = document.getElementById('category_budget').getContext('2d');
 
-    // Define a color scheme for categories
     const categoryColors = {
       "Personnel Services": { background: 'rgba(255, 99, 132, 0.5)', border: 'rgba(255, 99, 132, 1)' },
       "Other Expenses": { background: 'rgba(75, 192, 192, 0.5)', border: 'rgba(75, 192, 192, 1)' },
@@ -70,9 +67,8 @@ fetch('/operating/budget_by_category')
       "Equipment": { background: 'rgba(255, 159, 64, 0.5)', border: 'rgba(255, 159, 64, 1)' }
     };
 
-    // Generate background and border colors dynamically
-    const backgroundColors = labels.map(label => categoryColors[label]?.background || 'rgba(0, 0, 0, 0.5)'); // Default fallback
-    const borderColors = labels.map(label => categoryColors[label]?.border || 'rgba(0, 0, 0, 1)'); // Default fallback
+    const backgroundColors = labels.map(label => categoryColors[label]?.background || 'rgba(0, 0, 0, 0.5)'); 
+    const borderColors = labels.map(label => categoryColors[label]?.border || 'rgba(0, 0, 0, 1)');
 
     new Chart(ctx, {
       type: 'pie',

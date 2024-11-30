@@ -147,6 +147,19 @@ def get_dept_cap_budget():
   
   return jsonify(data)
 
+@app.route('/capital/neighborhood_budget')
+def neighborhood_budget():
+  neighborhood_budget = capital_df.groupby('Neighborhood')['Total_Project_Budget'].sum().sort_values(ascending=False)
+
+  top_n_neighborhoods = 5
+  top_neighborhoods = neighborhood_budget.head(top_n_neighborhoods)
+  other_neighborhoods = neighborhood_budget.iloc[top_n_neighborhoods:].sum()
+  top_neighborhoods['Other'] = other_neighborhoods
+
+  data = top_neighborhoods.reset_index().to_dict(orient='records')
+  return jsonify(data)
+
+
 @app.route('/capital/project_status')
 def get_project_status():
   project_status_counts = capital_df['Project_Status'].value_counts()
@@ -157,24 +170,13 @@ def get_project_status():
 
 @app.route('/capital/funding_sources')
 def get_funding_sources():
-  funding_sources = ['Authorization_Existing', 'Authorization_FY', 'Authorization_Future', 
-                    'Grant_Existing', 'Grant_FY', 'Grant_Future', 'External_Funds']
+  funding_sources = [
+    'Authorization_Existing', 'Authorization_FY', 'Authorization_Future', 
+    'Grant_Existing', 'Grant_FY', 'Grant_Future', 'External_Funds'
+  ]
   funding_totals = capital_df[funding_sources].sum()
 
-  data = funding_totals.reset_index().to_dict(orient='records')
-  
-  return jsonify(data)
-
-@app.route('/capital/top_5_neighborhoods')
-def get_top_neighborhoods():
-  neighborhood_budget = capital_df.groupby('Neighborhood')['Total_Project_Budget'].sum().sort_values(ascending=False)
-  top_n_neighborhoods = 5
-  top_neighborhoods = neighborhood_budget.head(top_n_neighborhoods)
-  other_neighborhoods = neighborhood_budget.iloc[top_n_neighborhoods:].sum()
-  top_neighborhoods['Other'] = other_neighborhoods
-
-  data = top_n_neighborhoods.reset_index().to_dict(orient='records')
-  
+  data = funding_totals.to_dict()
   return jsonify(data)
 
 @app.route('/capital/avg_project_budget')
@@ -185,14 +187,14 @@ def get_avg_project_budget():
   
   return jsonify(data)
 
-@app.route('/capital/capital_spending')
-def get_capital_spending():
+@app.route('/capital/yearly_spending')
+def get_yearly_spending():
   years = ['Capital_Year_0', 'CapitalYear_1', 'Capital_Year_25']
   capital_yearly_spending = capital_df[years].sum()
-
-  data = capital_yearly_spending.reset_index().to_dict(orient='records')
   
+  data = capital_yearly_spending.reset_index().rename(columns={'index': 'Year', 0: 'Spending'}).to_dict(orient='records')
   return jsonify(data)
+
 
 @app.route('/capital/dept_funding_sources')
 def get_dept_funding_sources():
