@@ -124,3 +124,82 @@ header h1 {
 		width: 100%;
 	}
 }
+
+/* Graph Block Container for Maps Page */
+.graph-block-container {
+	display: flex;
+	flex-direction: column; 
+	gap: 1.5rem; 
+	padding: 1rem;
+	text-align: center;
+}
+
+/* Graph Block Styling for Full-Width */
+.graph-block {
+	width: 100%;
+	padding: 1rem;
+	background-color: #f9f9f9;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Map-Specific Styles */
+.map-container {
+	position: relative;
+	width: 100%;
+	height: 600px;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	overflow: hidden;
+	background-color: #eaeaea; 
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Map Loading Placeholder */
+.map-container::before {
+	content: "Loading map...";
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #666;
+	font-size: 1.2em;
+	font-style: italic;
+	height: 100%;
+	width: 100%;
+	background-color: #f9f9f9;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 1;
+	transition: opacity 0.3s ease;
+}
+.map-container.loaded::before {
+	opacity: 0;
+	pointer-events: none;
+}
+
+/* Map Content Styles */
+.map {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	z-index: 2;
+	border-radius: 8px;
+}
+
+/* Responsive Styles for Map */
+@media (max-width: 768px) {
+	.map-container {
+		height: 400px; 
+	}
+}
+@media (min-width: 1024px) {
+	.graph-block-container {
+		flex-direction: column;
+	}
+	.graph-block {
+		width: 100%; 
+	}
+}
+

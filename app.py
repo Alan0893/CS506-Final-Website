@@ -1,6 +1,9 @@
 from flask import Flask, render_template, jsonify
 import pandas as pd
 import numpy as np
+import geopandas as gpd
+import folium
+from sklearn.linear_model import LinearRegression
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -38,6 +41,10 @@ def operating():
 @app.route('/capital')
 def capital():
   return render_template('capital.html')
+
+@app.route('/maps')
+def maps():
+  return render_template('maps.html')
 
 #------------------------------------------------------------------------------------------------
 @app.route('/operating/top_5_dept')
@@ -206,6 +213,77 @@ def get_dept_funding_sources():
   data = funding_by_department.reset_index().to_dict(orient='records')
   
   return jsonify(data)
+#------------------------------------------------------------------------------------------------
+@app.route('/maps/neighborhood_budget')
+def get_neighborhood_budget():
+  neighborhoods = gpd.read_file('./data/Census2020_BG_Neighborhoods/Census2020_BG_Neighborhoods.shp')
+  neighborhoods['BlockGr202']
+  set(capital_df['Neighborhood'].unique()) - set(neighborhoods['BlockGr202'])
+  capital_df['Neighborhood'] = capital_df['Neighborhood'].replace({
+    'Allston/Brighton':'Allston',
+    'Downtown/Government Center':'Downtown',
+    'Fenway-Kenmore':'Fenway',
+    'Bay Village':'South End'
+  })
+  neighborhood_budget = capital_df.groupby('Neighborhood')['Total_Project_Budget'].sum()
+  neighborhood_budget = neighborhood_budget.map('${:,.0f}'.format)
+  neighborhoods = neighborhoods.merge(neighborhood_budget, left_on='BlockGr202', right_index=True)
+  m = folium.Map(location=[42.3601, -71.0589], zoom_start=12, tiles='cartodbpositron')
+  folium.GeoJson(
+    neighborhoods,
+    tooltip=folium.GeoJsonTooltip(fields=['BlockGr202', 'Total_Project_Budget'],aliases=['Neighborhood','Total Project Budget'], labels=True),
+    popup=folium.GeoJsonPopup(fields=['BlockGr202', 'Total_Project_Budget'],aliases=['Neighborhood','Total Project Budget'], labels=True, sticky=False, localize=True, show=True, max_width=250),
+  ).add_to(m)
+  return m._repr_html_()
+
+@app.route('/maps/per_capita')
+def get_per_capita():
+  neighborhoods = gpd.read_file('data/Census2020_BG_Neighborhoods/Census2020_BG_Neighborhoods.shp')
+  set(capital_df['Neighborhood'].unique()) - set(neighborhoods['BlockGr202'])
+  capital_df['Neighborhood'] = capital_df['Neighborhood'].replace({
+    'Allston/Brighton':'Allston',
+    'Downtown/Government Center':'Downtown',
+    'Fenway-Kenmore':'Fenway',
+    'Bay Village':'South End'
+  })
+
+  income_df = pd.read_csv('data/2015-2019_neighborhood_tables_2021.12.21.csv')
+  income_df.columns = ['Location', 'Total population', 'Income', 'Per Capita Income','.','..']
+  income_df = income_df[['Location','Total population', 'Income', 'Per Capita Income']].dropna()
+  income_df = income_df.iloc[3:].reset_index(drop=True)
+  income_df['Total population'] = income_df['Total population'].str.replace(',','').astype(int)
+  income_df['Income'] = income_df['Income'].str.replace(',','').str.replace('$','').astype(int)
+  income_df['Per Capita Income'] = income_df['Per Capita Income'].str.replace(',','').str.replace('$','').astype(int)
+  neighborhood_expenses = capital_df.groupby('Neighborhood')['Total_Project_Budget'].sum()
+  neighborhood_expenses = neighborhood_expenses.reset_index()
+  neighborhood_expenses.columns = ['Location', 'Total_Project_Budget']
+  income_df = income_df.merge(neighborhood_expenses, on='Location', how='left')
+  income_df['Total_Project_Budget'] = income_df['Total_Project_Budget'].fillna(0)
+  income_df['Per Capita Expenses'] = income_df['Total_Project_Budget'] / income_df['Total population']
+  income_df = income_df.replace(0, np.nan)
+  dropped = income_df.dropna()
+  X = dropped['Per Capita Income'].values.reshape(-1, 1)
+  y = dropped['Per Capita Expenses']
+
+  model = LinearRegression()
+  model.fit(X, y)
+
+  neighborhoods_merged = neighborhoods.merge(income_df, left_on='BlockGr202', right_on='Location')
+  neighborhoods_merged['Predicted Per Capita Expenses'] = model.predict(neighborhoods_merged[['Per Capita Income']])
+
+  m = folium.Map(location=[42.3601, -71.0589], zoom_start=12, tiles='cartodbpositron')
+  folium.GeoJson(
+    neighborhoods_merged,
+    tooltip=folium.GeoJsonTooltip(fields=['Location', 'Per Capita Income', 'Per Capita Expenses'], aliases=['Neighborhood', 'Per Capita Income', 'Per Capita Expenses'], labels=True),
+    popup=folium.GeoJsonPopup(fields=['Location', 'Per Capita Income', 'Per Capita Expenses'], aliases=['Neighborhood', 'Per Capita Income', 'Per Capita Expenses'], labels=True, sticky=False, localize=True, show=True, max_width=250),
+    style_function=lambda x: {
+      'fillColor': 'green' if (x['properties']['Per Capita Expenses'] or 0) > (x['properties']['Predicted Per Capita Expenses'] or 0) else 'red',
+      'color': 'black',
+      'weight': 2,
+      'fillOpacity': 0.5
+    }
+  ).add_to(m)
+  return m._repr_html_()
 #------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
