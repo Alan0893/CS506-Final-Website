@@ -4,6 +4,7 @@ import numpy as np
 import geopandas as gpd
 import folium
 from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -285,6 +286,58 @@ def get_per_capita():
   ).add_to(m)
   return m._repr_html_()
 #------------------------------------------------------------------------------------------------
+# Linear Regression Model
+@app.route('/model')
+def get_model():
+  # Load and clean income data
+  income_df = pd.read_csv('data/2015-2019_neighborhood_tables_2021.12.21.csv')
+  income_df.columns = ['Location', 'Total population', 'Income', 'Per Capita Income', '.', '..']
+  income_df = income_df[['Location', 'Total population', 'Income', 'Per Capita Income']].dropna()
+  income_df = income_df.iloc[3:].reset_index(drop=True)
+  income_df['Total population'] = income_df['Total population'].str.replace(',', '').astype(int)
+  income_df['Income'] = income_df['Income'].str.replace(',', '').str.replace('$', '').astype(int)
+  income_df['Per Capita Income'] = income_df['Per Capita Income'].str.replace(',', '').str.replace('$', '').astype(int)
+
+  # Merge with neighborhood expenses data
+  neighborhood_expenses = capital_df.groupby('Neighborhood')['Total_Project_Budget'].sum()
+  neighborhood_expenses = neighborhood_expenses.reset_index()
+  neighborhood_expenses.columns = ['Location', 'Total_Project_Budget']
+  income_df = income_df.merge(neighborhood_expenses, on='Location', how='left')
+  income_df['Total_Project_Budget'] = income_df['Total_Project_Budget'].fillna(0)
+  income_df['Per Capita Expenses'] = income_df['Total_Project_Budget'] / income_df['Total population']
+  income_df = income_df.replace(0, np.nan)
+  dropped = income_df.dropna()
+
+  # Prepare data for linear regression
+  X = dropped['Per Capita Income'].values.reshape(-1, 1)
+  y = dropped['Per Capita Expenses']
+
+  # Fit the linear regression model
+  model = LinearRegression()
+  model.fit(X, y)
+
+  # Generate predicted values for the regression line
+  predicted_expenses = model.predict(X)
+
+  # Prepare data for return
+  graph_data = {
+    "scatter": {
+      "x": dropped['Per Capita Income'].tolist(),
+      "y": dropped['Per Capita Expenses'].tolist(),
+      "labels": dropped['Location'].tolist(),
+      "sizes": (dropped['Total population'] / 1000).tolist()  # Scale down for visualization
+    },
+    "regression_line": {
+      "x": dropped['Per Capita Income'].tolist(),
+      "y": predicted_expenses.tolist()
+    },
+    "model": {
+      "coefficients": model.coef_.tolist(),
+      "intercept": model.intercept_
+    }
+  }
+
+  return jsonify(graph_data)
 
 if __name__ == '__main__':
   app.run(debug=True)

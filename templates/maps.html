@@ -12,13 +12,24 @@
 <body>
     <!-- Title Section -->
     <header class="header">
-        <h1 class="centered-title">Map Interactions</h1>
+        <h1 class="centered-title">Map & Model Interactions</h1>
         <div class="button-container">
             <a href="{{ url_for('index') }}" class="button">Home</a>
             <a href="{{ url_for('operating') }}" class="button">Operating</a>
             <a href="{{ url_for('capital') }}" class="button">Capital</a>
         </div>
     </header>
+
+    <div class="map-block-container">
+			
+        <div class="map-block">
+            <h2 class="block-title">Linear Regression Model</h2>
+            <div class="">
+                <canvas id="linear_regression_graph"></canvas>
+            </div>
+        </div>
+
+    </div>
 
     <!-- Graph Block Container -->
     <div class="map-block-container">
